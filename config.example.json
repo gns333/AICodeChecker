@@ -1,0 +1,37 @@
+{
+    "api": {
+        "type": "volcengine",
+        "url": "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
+        "key": "your-api-key-here",
+        "model": "your-model-name",
+        "max_tokens": 32000,
+        "enable_log": false,
+        "max_text_length": 64000
+    },
+    "check": {
+        "directory": "/path/to/your/code",
+        "output_dir": "./check_results",
+        "concurrency": 5
+    },
+    "svn": {
+        "log_limit": 50,
+        "priority_authors": ["author1", "author2", "author3"],
+        "filter_after": ""
+    },
+    "rules": [
+        {
+            "name": "通用代码检查",
+            "description": "检查代码中的潜在问题，包括逻辑错误、安全隐患、性能问题等",
+            "extensions": [".lua", ".js", ".py", ".cpp", ".java"],
+            "keywords": [],
+            "enabled": true
+        },
+        {
+            "name": "特定API使用检查",
+            "description": "检查特定API的使用是否规范，是否存在错误用法",
+            "extensions": [".lua", ".js"],
+            "keywords": ["特定API名称"],
+            "enabled": false
+        }
+    ]
+} 
