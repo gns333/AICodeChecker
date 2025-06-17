@@ -74,7 +74,7 @@ func isFileInSvn(filePath string) bool {
 // getFileCommits 获取文件的提交历史
 func getFileCommits(filePath string, limit int) ([]CommitInfo, error) {
 	// 执行svn log命令
-	cmd := exec.Command("svn", "log", "-l", strconv.Itoa(limit), "--xml", filePath)
+	cmd := exec.Command("svn", "log", "-r", "HEAD:1", "-l", strconv.Itoa(limit), "--xml", filePath)
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("执行svn log命令失败: %v", err)
@@ -214,7 +214,7 @@ func HasCommitsAfter(filePath string, afterTime time.Time) (bool, error) {
 
 	// 检查是否有在指定时间之后的提交
 	for _, commit := range commits {
-		commitTime, err := parseCommitDate(commit.Date)
+		commitTime, err := ParseCommitDate(commit.Date)
 		if err != nil {
 			continue // 跳过无法解析的日期
 		}
@@ -227,10 +227,9 @@ func HasCommitsAfter(filePath string, afterTime time.Time) (bool, error) {
 	return false, nil
 }
 
-// parseCommitDate 解析SVN提交日期
-func parseCommitDate(dateStr string) (time.Time, error) {
+// ParseCommitDate 解析SVN提交日期
+func ParseCommitDate(dateStr string) (time.Time, error) {
 	// SVN日期格式通常是: 2024-01-01T12:00:00.000000Z
-	// 支持多种可能的格式
 	formats := []string{
 		"2006-01-02T15:04:05.000000Z",
 		"2006-01-02T15:04:05Z",
@@ -240,7 +239,8 @@ func parseCommitDate(dateStr string) (time.Time, error) {
 
 	for _, format := range formats {
 		if t, err := time.Parse(format, dateStr); err == nil {
-			return t, nil
+			// 直接加8小时，不带时区信息
+			return t.Add(8 * time.Hour), nil
 		}
 	}
 
